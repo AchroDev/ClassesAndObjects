@@ -1,10 +1,16 @@
 // Define a class
 
-// In Kotlin classes are final by default, you need to add "open" to be able to extend the class
-open class SmartDevice(val name: String, val category: String) {
+// In Kotlin classes are final by default, you need to add "open" to be able to extend the class.
+// Updated the class to now be a "protected" constructor instead of an openly available one.
+internal open class SmartDevice protected constructor (val name: String, val category: String) {
 
     // Defines the class property "deviceStatus" so that other devices will know if it is on or off.
+    //var deviceStatus = "online"
+
+    // Setting the "protected" visibility modifier on the "set()" property to protect it from anything outside the class or it's children.
+    // We are not performing any actions or checks within the set() function, so we are omitting the "()" and body of it.
     var deviceStatus = "online"
+        protected set
 
     // Defines the deviceType property of the SmartDevice class. Default is "unknown".
     open val deviceType = "unknown"
@@ -31,15 +37,23 @@ class SmartTvDevice(deviceName: String, deviceCategory: String) : SmartDevice(na
     override val deviceType = "Smart TV"
 
     // Sets the device volume property and function to specify the available range.
-    var speakerVolume = 2
+    private var speakerVolume = 2
         set(value) {
             if (value in 0..100) {
                 field = value
             }
         }
 
+    // Example of the "private" visibility modifier on the setter "set()" function.
+    //var speakerVolume = 2
+    //        private set(value) {
+    //            if (value in 0..100) {
+    //                field = value
+    //            }
+    //        }
+
     // Sets the device channel number property and function to specify the available range.
-    var channelNumber = 1
+    private var channelNumber = 1
         set(value) {
             if (value in 0..100) {
                 field = value
@@ -52,17 +66,19 @@ class SmartTvDevice(deviceName: String, deviceCategory: String) : SmartDevice(na
         println("Speaker volume increased to $speakerVolume")
     }
 
-    // Defines the method to increase the channel number and prints the current value.
-    fun nextChannel() {
+    // Defines the method to increase the channel number and prints the current value. Now using the "protected" visibility modifier.
+    protected fun nextChannel() {
         channelNumber++
         println("Channel number increased to $channelNumber")
     }
 
+    // Method to turn off the TV and assign properties. now uses the "super" keyword to pull from the superclass
     override fun turnOn() {
         super.turnOn()
         println("$name is turned on. Speaker volume is set to $speakerVolume and channel number is " + "set to $channelNumber.")
     }
 
+    // Method to turn on the TV and assign properties. now uses the "super" keyword to pull from the superclass
     override fun turnOff() {
         super.turnOff()
         println("$name turned off")
@@ -76,7 +92,7 @@ class SmartLightDevice(deviceName: String, deviceCategory: String) : SmartDevice
     override val deviceType = "Smart Light"
 
     // Defining the initial brightness for the light.
-    var brightnessLevel = 0
+    private var brightnessLevel = 0
         set(value) {
             if (value in 0..100) {
                 field = value
@@ -110,13 +126,19 @@ class SmartHome(
     val smartLightDevice: SmartLightDevice
 ) {
 
-    // Method to turn on the Smart TV.
+    // Defining a method to count the amount of times a device has been power cycled.
+    var deviceTurnOnCount = 0
+        private set
+
+    // Method to turn on the Smart TV. Implementing the power cycle counter.
     fun turnOnTv() {
+        deviceTurnOnCount++
         smartTvDevice.turnOn()
     }
 
-    // Method to turn off the Smart TV.
+    // Method to turn off the Smart TV. Implementing the power cycle counter.
     fun turnOffTv() {
+        deviceTurnOnCount--
         smartTvDevice.turnOff()
     }
 
@@ -130,13 +152,15 @@ class SmartHome(
         smartTvDevice.nextChannel()
     }
 
-    // Method to turn on the Smart Light.
+    // Method to turn on the Smart Light. Implementing the power cycle counter.
     fun turnOnLight() {
+        deviceTurnOnCount++
         smartLightDevice.turnOn()
     }
 
-    // Method to turn off the Smart Light.
+    // Method to turn off the Smart Light. Implementing the power cycle counter.
     fun turnOffLight() {
+        deviceTurnOnCount--
         smartLightDevice.turnOff()
     }
 
@@ -152,6 +176,8 @@ class SmartHome(
     }
 }
 
+
+//... C'mon... you know what the main function is....
 fun main() {
 
     // Initializing the smartDevice variable to define a device from one of the classes and execute the code.
