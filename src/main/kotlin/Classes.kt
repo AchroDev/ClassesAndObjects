@@ -1,4 +1,3 @@
-import kotlin.math.max
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 
@@ -6,7 +5,7 @@ import kotlin.reflect.KProperty
 
 // In Kotlin classes are final by default, you need to add "open" to be able to extend the class.
 // Updated the class to now be a "protected" constructor instead of an openly available one.
-open class SmartDevice protected constructor (val name: String, val category: String) {
+open class SmartDevice (val name: String, val category: String) {
 
     // Defines the class property "deviceStatus" so that other devices will know if it is on or off.
     //var deviceStatus = "online"
@@ -60,8 +59,8 @@ class SmartTvDevice(deviceName: String, deviceCategory: String) : SmartDevice(na
         println("Speaker volume increased to $speakerVolume")
     }
 
-    // Defines the method to increase the channel number and prints the current value. Now using the "protected" visibility modifier.
-    internal fun nextChannel() {
+    // Defines the method to increase the channel number and prints the current value.
+    fun nextChannel() {
         channelNumber++
         println("Channel number increased to $channelNumber")
     }
@@ -170,7 +169,7 @@ class RangeRegulator(
     initialValue: Int,
     private val minValue: Int,
     private val maxValue: Int
-) : ReadWriteProperty<Any, Int> {
+) : ReadWriteProperty<Any?, Int> {
 
     // Setting the backing field variable
     var fieldData = initialValue
