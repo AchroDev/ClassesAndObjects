@@ -1,8 +1,12 @@
+import kotlin.math.max
+import kotlin.properties.ReadWriteProperty
+import kotlin.reflect.KProperty
+
 // Define a class
 
 // In Kotlin classes are final by default, you need to add "open" to be able to extend the class.
 // Updated the class to now be a "protected" constructor instead of an openly available one.
-internal open class SmartDevice protected constructor (val name: String, val category: String) {
+open class SmartDevice protected constructor (val name: String, val category: String) {
 
     // Defines the class property "deviceStatus" so that other devices will know if it is on or off.
     //var deviceStatus = "online"
@@ -36,13 +40,8 @@ class SmartTvDevice(deviceName: String, deviceCategory: String) : SmartDevice(na
     // Defines the device type as "Smart TV" overriding the method from the superclass.
     override val deviceType = "Smart TV"
 
-    // Sets the device volume property and function to specify the available range.
-    private var speakerVolume = 2
-        set(value) {
-            if (value in 0..100) {
-                field = value
-            }
-        }
+    // Sets the device volume property, now using the delegate "RangeRegulator" class to define the properties.
+    private var speakerVolume by RangeRegulator(initialValue = 2, minValue = 0, maxValue = 100)
 
     // Example of the "private" visibility modifier on the setter "set()" function.
     //var speakerVolume = 2
@@ -52,13 +51,8 @@ class SmartTvDevice(deviceName: String, deviceCategory: String) : SmartDevice(na
     //            }
     //        }
 
-    // Sets the device channel number property and function to specify the available range.
-    private var channelNumber = 1
-        set(value) {
-            if (value in 0..100) {
-                field = value
-            }
-        }
+    // Sets the device channel number property, now using the delegate "RangeRegulator" class to define the properties.
+    private var channelNumber by RangeRegulator(initialValue = 1, minValue = 0, maxValue = 200)
 
     // Defines the method to increase the speaker volume and prints the current value.
     fun increaseSpeakerVolume() {
@@ -67,7 +61,7 @@ class SmartTvDevice(deviceName: String, deviceCategory: String) : SmartDevice(na
     }
 
     // Defines the method to increase the channel number and prints the current value. Now using the "protected" visibility modifier.
-    protected fun nextChannel() {
+    internal fun nextChannel() {
         channelNumber++
         println("Channel number increased to $channelNumber")
     }
@@ -91,13 +85,8 @@ class SmartLightDevice(deviceName: String, deviceCategory: String) : SmartDevice
     // Defines the device type as "Smart Light" overriding the method from the superclass.
     override val deviceType = "Smart Light"
 
-    // Defining the initial brightness for the light.
-    private var brightnessLevel = 0
-        set(value) {
-            if (value in 0..100) {
-                field = value
-            }
-        }
+    // Defining the initial brightness for the light. Now using the delegate "RangeRegulator" class to define the properties.
+    private var brightnessLevel by RangeRegulator(initialValue = 0, minValue = 0, maxValue = 100)
 
     // Defining the method to increase the brightness.
     fun increaseBrightness() {
@@ -176,6 +165,28 @@ class SmartHome(
     }
 }
 
+// Creating a "ReadWriteProperty" delegate interface under the "RangeRegulator" class.
+class RangeRegulator(
+    initialValue: Int,
+    private val minValue: Int,
+    private val maxValue: Int
+) : ReadWriteProperty<Any, Int> {
+
+    // Setting the backing field variable
+    var fieldData = initialValue
+
+    // Method to get the value
+    override fun getValue(thisRef: Any?, property: KProperty<*>): Int {
+        return fieldData
+    }
+
+    // Method to set the value
+    override fun setValue(thisRef: Any?, property: KProperty<*>, value: Int) {
+        if (value in minValue..maxValue) {
+            fieldData = value
+        }
+    }
+}
 
 //... C'mon... you know what the main function is....
 fun main() {
