@@ -12,11 +12,16 @@ open class SmartDevice (val name: String, val category: String) {
 
     // Setting the "protected" visibility modifier on the "set()" property to protect it from anything outside the class or it's children.
     // We are not performing any actions or checks within the set() function, so we are omitting the "()" and body of it.
-    var deviceStatus = "online"
+    open var deviceStatus = "online"
         protected set
 
     // Defines the deviceType property of the SmartDevice class. Default is "unknown".
     open val deviceType = "unknown"
+
+    // CHALLENGE: Define a "printDeviceInfo" method to print the following string.
+    open fun printDeviceInfo() {
+        println("Device name: $name, category: $category, type: $deviceType")
+    }
 
     // Defines class method to turn on the device.
     open fun turnOn() {
@@ -59,10 +64,22 @@ class SmartTvDevice(deviceName: String, deviceCategory: String) : SmartDevice(na
         println("Speaker volume increased to $speakerVolume")
     }
 
+    //CHALLENGE: define "decreaseVolume" method that decreases the volume
+    fun decreaseSpeakerVolume() {
+        speakerVolume--
+        print("Speaker volume decreased to $speakerVolume")
+    }
+
     // Defines the method to increase the channel number and prints the current value.
     fun nextChannel() {
         channelNumber++
         println("Channel number increased to $channelNumber")
+    }
+
+    //CHALLENGE: define "previousChannel" method that navigates to the previous channel.
+    fun previousChannel() {
+        channelNumber--
+        println("Channel number decreased to $channelNumber")
     }
 
     // Method to turn off the TV and assign properties. now uses the "super" keyword to pull from the superclass
@@ -93,6 +110,12 @@ class SmartLightDevice(deviceName: String, deviceCategory: String) : SmartDevice
         println("Brightness level increased to $brightnessLevel")
     }
 
+    //CHALLENGE: Define a method to decrease the brightness.
+    fun decreaseBrightness() {
+        brightnessLevel--
+        println("Brightness level decreased to $brightnessLevel")
+    }
+
     // Method to turn on the lights and assign properties. now uses the "super" keyword to pull from the superclass
     override fun turnOn() {
         super.turnOn()
@@ -114,47 +137,116 @@ class SmartHome(
     val smartLightDevice: SmartLightDevice
 ) {
 
+    // CHALLENGE: ensure that all actions can only be performed when each device's "deviceStatus" is set to "on".
+    // CHALLENGE: define decreaseTvVolume(), changeTvChannelToPrevious(), printSmartTvInfo(), printSmartLightInfo(), and decreaseLightBrightness() method.
+
     // Defining a method to count the amount of times a device has been power cycled.
     var deviceTurnOnCount = 0
         private set
 
     // Method to turn on the Smart TV. Implementing the power cycle counter.
     fun turnOnTv() {
-        deviceTurnOnCount++
-        smartTvDevice.turnOn()
+        if (smartTvDevice.deviceStatus == "on") {
+            deviceTurnOnCount++
+            smartTvDevice.turnOn()
+        } else {
+            println("The Smart TV is already on.")
+        }
     }
 
     // Method to turn off the Smart TV. Implementing the power cycle counter.
     fun turnOffTv() {
-        deviceTurnOnCount--
-        smartTvDevice.turnOff()
+        if (smartTvDevice.deviceStatus == "on") {
+            deviceTurnOnCount--
+            smartTvDevice.turnOff()
+        } else {
+            println("The Smart TV is already off.")
+        }
     }
 
     // Method to increase the Smart TV volume.
     fun increaseTvVolume() {
-        smartTvDevice.increaseSpeakerVolume()
+        if (smartTvDevice.deviceStatus == "on") {
+            smartTvDevice.increaseSpeakerVolume()
+        } else {
+            println("Please turn on the TV to adjust the volume.")
+        }
+    }
+
+
+    // Method to decrease the Smart TV volume.
+    fun decreaseTvVolume() {
+        if (smartTvDevice.deviceStatus == "on") {
+            smartTvDevice.decreaseSpeakerVolume()
+        } else {
+            println("Please turn on the TV to adjust the volume.")
+        }
     }
 
     // Method to change to the next channel on the Smart TV.
     fun changeTvChannelToNexT() {
-        smartTvDevice.nextChannel()
+        if (smartTvDevice.deviceStatus == "on") {
+            smartTvDevice.nextChannel()
+        } else {
+            println("Please turn on the TV to adjust the channel.")
+        }
+    }
+
+    // Method to change to the previous channel on the Smart TV.
+    fun changeTvChannelToPrevious() {
+        if (smartTvDevice.deviceStatus == "on") {
+            smartTvDevice.previousChannel()
+        } else {
+            println("Please turn on the TV to adjust the channel.")
+        }
+    }
+
+    // Method to print the information about the TV
+    fun printSmartTvInfo(){
+        smartTvDevice.printDeviceInfo()
     }
 
     // Method to turn on the Smart Light. Implementing the power cycle counter.
     fun turnOnLight() {
-        deviceTurnOnCount++
-        smartLightDevice.turnOn()
+        if (smartLightDevice.deviceStatus == "on") {
+            deviceTurnOnCount++
+            smartLightDevice.turnOn()
+        } else {
+            println("The Smart Light is already on.")
+        }
+    }
+
+    // Method to print the information about the Light
+    fun printSmartLightInfo() {
+        smartLightDevice.printDeviceInfo()
     }
 
     // Method to turn off the Smart Light. Implementing the power cycle counter.
     fun turnOffLight() {
-        deviceTurnOnCount--
-        smartLightDevice.turnOff()
+        if (smartLightDevice.deviceStatus == "on") {
+            deviceTurnOnCount--
+            smartLightDevice.turnOff()
+        } else {
+            println("The Smart Light is already off.")
+        }
     }
 
     // Method to increase the Smart Lights brightness.
     fun increaseLightBrightness() {
-        smartLightDevice.increaseBrightness()
+        if (smartLightDevice.deviceStatus == "on") {
+            smartLightDevice.increaseBrightness()
+        } else {
+            println("Please turn on the Smart Light before adjusting the brightness.")
+        }
+    }
+
+    // Method to decrease the Smart Lights brightness.
+    fun decreaseLightBrightness() {
+        if (smartLightDevice.deviceStatus == "on") {
+            smartLightDevice.decreaseBrightness()
+        } else {
+            println("Please turn on the Smart Light before adjusting the brightness.")
+        }
     }
 
     // Method to turn off all Smart Devices.
@@ -193,8 +285,11 @@ fun main() {
     // Initializing the smartDevice variable to define a device from one of the classes and execute the code.
     var smartDevice: SmartDevice = SmartTvDevice("Android TV", "Entertainment")
     smartDevice.turnOn()
+    smartDevice.printDeviceInfo()
 
     // Reassigning the smartDevice variable from a TV to a Light, providing an example of polymorphism.
     smartDevice = SmartLightDevice("Google Light", "Utility")
     smartDevice.turnOn()
+    smartDevice.printDeviceInfo()
+
 }
