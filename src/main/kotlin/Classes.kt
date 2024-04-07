@@ -8,11 +8,11 @@ import kotlin.reflect.KProperty
 open class SmartDevice (val name: String, val category: String) {
 
     // Defines the class property "deviceStatus" so that other devices will know if it is on or off.
-    //var deviceStatus = "online"
+    //var deviceStatus = "on"
 
     // Setting the "protected" visibility modifier on the "set()" property to protect it from anything outside the class or it's children.
     // We are not performing any actions or checks within the set() function, so we are omitting the "()" and body of it.
-    open var deviceStatus = "online"
+    open var deviceStatus = "on"
         protected set
 
     // Defines the deviceType property of the SmartDevice class. Default is "unknown".
@@ -292,4 +292,20 @@ fun main() {
     smartDevice.turnOn()
     smartDevice.printDeviceInfo()
 
+    // Initializing the SmartHome class
+    var smartHome = SmartHome(SmartTvDevice(deviceName = "Android TV", deviceCategory = "Entertainment"), SmartLightDevice(deviceName = "Google Light", deviceCategory = "Utility"))
+
+    // Checks the device status of the Smart TV and Smart Light after they have been turned on and info is printed
+    println(smartHome.smartTvDevice.deviceStatus)
+    println(smartHome.smartLightDevice.deviceStatus)
+
+    // Turn off all devices using method from SmartHome class
+    smartHome.turnOffAllDevices()
+
+    // Checks the device status of the Smart TV and Smart Light after they have been turned off
+    println(smartHome.smartTvDevice.deviceStatus)
+    println(smartHome.smartLightDevice.deviceStatus)
+
+    // Calling the increaseTvVolume method to see if the deviceStatus check is working properly.
+    smartHome.increaseTvVolume()
 }
